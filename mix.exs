@@ -24,7 +24,7 @@ defmodule ExRazorpay.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:httpoison, "~> 1.8.0"},
+      {:httpoison, "~> 0.13"},
       {:poison, "~> 3.1"},
       {:ex_doc, "~> 0.16", only: [:dev, :test]},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false}
