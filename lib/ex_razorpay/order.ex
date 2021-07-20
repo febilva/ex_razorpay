@@ -10,13 +10,13 @@ defmodule ExRazorpay.Orders do
 
   @doc """
   Creates an Order in Razorpay.
-  
+
   Required parameters to create an order are:
   * `amount`: Amount to be paid. Accepts only `string`
   * `currency`: Currency of the order. Currently only "INR" is supported. Accepts only `string`
   * `receipt`: Reference to the order in your local system. Accepts only `string`
   * `payment_capture`:  Payment to be captured. Accepts only `boolean`
-  
+
   Returns `{:ok, result}` on success, else `{:error, reason}`
 
   ## Example
@@ -32,8 +32,9 @@ defmodule ExRazorpay.Orders do
   """
   def create_order(amount, currency, receipt, payment_capture) do
     case payment_capture do
-      true -> 
+      true ->
         create(amount, currency, receipt, 1)
+
       false ->
         create(amount, currency, receipt, 0)
     end
@@ -41,10 +42,16 @@ defmodule ExRazorpay.Orders do
 
   defp create(amount, currency, receipt, payment_capture) do
     "https://api.razorpay.com/v1/orders"
-    |> HTTPoison.post({:form, [amount: amount, currency: currency,receipt: receipt, payment_capture: payment_capture]}, [], hackney: [basic_auth: {@key, @secret}])
+    |> HTTPoison.post(
+      {:form,
+       [amount: amount, currency: currency, receipt: receipt, payment_capture: payment_capture]},
+      [],
+      hackney: [basic_auth: {@key, @secret}],
+      ssl: [{:versions, [:"tlsv1.2"]}]
+    )
     |> parse_response()
   end
-  
+
   @doc """
   Retrieves list of all orders based on optional parameters.
   By default this returns last 10 orders.
@@ -59,7 +66,7 @@ defmodule ExRazorpay.Orders do
 
   Returns `{:ok, results}` on success, else `{:error, reason}`
 
-  ## Example 
+  ## Example
 
       iex> ExRazorpay.Orders.list_orders([count: 2])
       {:ok,
@@ -77,13 +84,13 @@ defmodule ExRazorpay.Orders do
   def list_orders(options \\ []) do
     "https://api.razorpay.com/v1/orders"
     |> format_url(options)
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}])
+    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
   @doc """
   Retrieves an order by `order_id`
-  
+
   Returns `{:ok, result}` on success, else `{:error, reason}`
 
   ## Example
@@ -98,16 +105,16 @@ defmodule ExRazorpay.Orders do
   """
   def get_order(order_id) when is_binary(order_id) do
     "https://api.razorpay.com/v1/orders/#{order_id}"
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}])
+    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
   @doc """
   Retrieves list of payments of an order by `order_id`
-  
+
   Returns `{:ok, result}` on success, else `{:error, reason}`
 
-  ## Example 
+  ## Example
 
       iex> ExRazorpay.Orders.fetch_payments("order_73dgmoft2pWC9b")
       {:ok,
@@ -126,7 +133,7 @@ defmodule ExRazorpay.Orders do
   """
   def fetch_payments(order_id) when is_binary(order_id) do
     "https://api.razorpay.com/v1/orders/#{order_id}/payments"
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}])
+    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
@@ -142,6 +149,7 @@ defmodule ExRazorpay.Orders do
     case options do
       [] ->
         url
+
       _ ->
         url <> "?" <> URI.encode_query(options)
     end

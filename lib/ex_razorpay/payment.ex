@@ -38,7 +38,7 @@ defmodule ExRazorpay.Payments do
   def list_payments(options \\ []) when is_list(options) do
     "https://api.razorpay.com/v1/payments"
     |> format_url(options)
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}])
+    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
@@ -64,7 +64,7 @@ defmodule ExRazorpay.Payments do
 
   def fetch_payment(id) when is_binary(id) do
     "https://api.razorpay.com/v1/payments/#{id}"
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}])
+    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
@@ -93,7 +93,10 @@ defmodule ExRazorpay.Payments do
   """
   def capture_payment(payment_id, amount) when is_binary(payment_id) and is_binary(amount) do
     "https://api.razorpay.com/v1/payments/#{payment_id}/capture"
-    |> HTTPoison.post({:form, [amount: amount]}, [], hackney: [basic_auth: {@key, @secret}])
+    |> HTTPoison.post({:form, [amount: amount]}, [],
+      hackney: [basic_auth: {@key, @secret}],
+      ssl: [{:versions, [:"tlsv1.2"]}]
+    )
     |> parse_response()
   end
 
@@ -113,10 +116,14 @@ defmodule ExRazorpay.Payments do
   """
   def create_refund(payment_id, amount, notes \\ []) when is_binary(payment_id) do
     "https://api.razorpay.com/v1/payments/#{payment_id}/refund"
-    |> HTTPoison.post({:form, [amount: amount]}, [], hackney: [basic_auth: {@key, @secret}])
+    |> HTTPoison.post({:form, [amount: amount]}, [],
+      hackney: [basic_auth: {@key, @secret}],
+      ssl: [{:versions, [:"tlsv1.2"]}]
+    )
     |> parse_response()
   end
 
+  @spec get_refunds(binary, any) :: {:ok, false | nil | true | binary | list | number | map}
   @doc """
     Retrieves list of refunds of a payment by `payment_id` and optional parameters
     By default this returns last 10 refunds.
@@ -142,7 +149,7 @@ defmodule ExRazorpay.Payments do
   def get_refunds(payment_id, options \\ []) when is_binary(payment_id) do
     "https://api.razorpay.com/v1/payments/#{payment_id}/refunds"
     |> format_url(options)
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}])
+    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
@@ -160,9 +167,9 @@ defmodule ExRazorpay.Payments do
           "payment_id" => "pay_8wiNmKrlrzTi7D", "receipt" => nil}}
   
   """
-  def get_refund(payment_id, refund_id) when is_binary(payment_id) and is_binary(refund_id)do
+  def get_refund(payment_id, refund_id) when is_binary(payment_id) and is_binary(refund_id) do
     "https://api.razorpay.com/v1/payments/#{payment_id}/refunds/#{refund_id}"
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}])
+    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
   
@@ -178,6 +185,7 @@ defmodule ExRazorpay.Payments do
     case options do
       [] ->
         url
+
       _ ->
         url <> "?" <> URI.encode_query(options)
     end

@@ -9,7 +9,7 @@ defmodule ExRazorpay.Mixfile do
       description: "Razorpay API bindings for Elixir",
       source_url: "https://github.com/sasankyadavalli/ex_razorpay",
       package: package(),
-      start_permanent: Mix.env == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
@@ -24,7 +24,7 @@ defmodule ExRazorpay.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:httpoison, "~> 0.13"},
+      {:httpoison, "~> 1.8.0"},
       {:poison, "~> 3.1"},
       {:ex_doc, "~> 0.16", only: [:dev, :test]},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false}
