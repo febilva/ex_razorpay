@@ -5,8 +5,8 @@ defmodule ExRazorpay.Orders do
     For more information on orders: https://docs.razorpay.com/v1/page/orders
   """
 
-  @key :ex_razorpay |> Application.fetch_env!(:key)
-  @secret :ex_razorpay |> Application.fetch_env!(:secret)
+  @key :ex_razorpay |> Application.compile_env!(:key)
+  @secret :ex_razorpay |> Application.compile_env!(:secret)
 
   @doc """
   Creates an Order in Razorpay.

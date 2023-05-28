@@ -3,13 +3,13 @@ defmodule ExRazorpay.Payments do
     Handles Razorpay payment requests like list all payments, fetch a payment, create a payment etc.
   """
 
-  @key :ex_razorpay |> Application.fetch_env!(:key)
-  @secret :ex_razorpay |> Application.fetch_env!(:secret)
+  @key :ex_razorpay |> Application.compile_env!(:key)
+  @secret :ex_razorpay |> Application.compile_env!(:secret)
 
   @doc """
-  Retrieves list of payments based on optional parameters. 
-  By default this returns recent 10 payments. 
-    
+  Retrieves list of payments based on optional parameters.
+  By default this returns recent 10 payments.
+
   Optional parameters it supports are:
   * `from`: The timestamp in seconds after which the payments were created. Accepts only `timestamp (epoch)`
   * `to`:   The timestamp in seconds before which payments were created. Accepts only `timestamp (epoch)`
@@ -69,8 +69,8 @@ defmodule ExRazorpay.Payments do
   end
 
   @doc """
-  Captures a specific payment by `payment_id` and the amount(should be equal to the authorized amount, in paise) to be captured. 
-  
+  Captures a specific payment by `payment_id` and the amount(should be equal to the authorized amount, in paise) to be captured.
+
   Returns `{:ok, result}` on success, else `{:error, reason}`
 
   ## Example
@@ -144,7 +144,7 @@ defmodule ExRazorpay.Payments do
           "items" => [%{"amount" => 50000, "created_at" => 1509651274,
           "currency" => "INR", "entity" => "refund", "id" => "rfnd_8wiQVCxaC8lGza",
           "notes" => [], "payment_id" => "pay_8wiNmKrlrzTi7D", "receipt" => nil}]}}
-  
+
   """
   def get_refunds(payment_id, options \\ []) when is_binary(payment_id) do
     "https://api.razorpay.com/v1/payments/#{payment_id}/refunds"
@@ -165,14 +165,14 @@ defmodule ExRazorpay.Payments do
         %{"amount" => 50000, "created_at" => 1509651274, "currency" => "INR",
           "entity" => "refund", "id" => "rfnd_8wiQVCxaC8lGza", "notes" => [],
           "payment_id" => "pay_8wiNmKrlrzTi7D", "receipt" => nil}}
-  
+
   """
   def get_refund(payment_id, refund_id) when is_binary(payment_id) and is_binary(refund_id) do
     "https://api.razorpay.com/v1/payments/#{payment_id}/refunds/#{refund_id}"
     |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
-  
+
   defp parse_response({:ok, %HTTPoison.Response{body: body, status_code: _status}}) do
     Poison.decode(body)
   end
