@@ -3,8 +3,8 @@ defmodule ExRazorpay.Refunds do
     Handles Razorpay refund requests like list all refunds, get a refund.
   """
 
-  @key :ex_razorpay |> Application.compile_env!(:key)
-  @secret :ex_razorpay |> Application.compile_env!(:secret)
+  @key :ex_razorpay |> Application.fetch_env!(:key)
+  @secret :ex_razorpay |> Application.fetch_env!(:secret)
 
   @doc """
   Retrieves list of refunds based on optional parameters.

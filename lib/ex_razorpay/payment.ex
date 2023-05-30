@@ -3,8 +3,8 @@ defmodule ExRazorpay.Payments do
     Handles Razorpay payment requests like list all payments, fetch a payment, create a payment etc.
   """
 
-  @key :ex_razorpay |> Application.compile_env!(:key)
-  @secret :ex_razorpay |> Application.compile_env!(:secret)
+  @key :ex_razorpay |> Application.fetch_env!(:key)
+  @secret :ex_razorpay |> Application.fetch_env!(:secret)
 
   @doc """
   Retrieves list of payments based on optional parameters.
