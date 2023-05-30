@@ -5,8 +5,14 @@ defmodule ExRazorpay.Orders do
     For more information on orders: https://docs.razorpay.com/v1/page/orders
   """
 
-  @key :ex_razorpay |> Application.fetch_env!(:key)
-  @secret :ex_razorpay |> Application.fetch_env!(:secret)
+  # @key :ex_razorpay |> Application.fetch_env!(:key)
+  # @secret :ex_razorpay |> Application.fetch_env!(:secret)
+
+  defp fetch_key_and_secret() do
+    key = Application.fetch_env!(:ex_razorpay, :key)
+    secret = Application.fetch_env!(:ex_razorpay, :secret)
+    {key, secret}
+  end
 
   @doc """
   Creates an Order in Razorpay.
@@ -41,12 +47,13 @@ defmodule ExRazorpay.Orders do
   end
 
   defp create(amount, currency, receipt, payment_capture) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/orders"
     |> HTTPoison.post(
       {:form,
        [amount: amount, currency: currency, receipt: receipt, payment_capture: payment_capture]},
       [],
-      hackney: [basic_auth: {@key, @secret}],
+      hackney: [basic_auth: {key, secret}],
       ssl: [{:versions, [:"tlsv1.2"]}]
     )
     |> parse_response()
@@ -82,9 +89,10 @@ defmodule ExRazorpay.Orders do
 
   """
   def list_orders(options \\ []) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/orders"
     |> format_url(options)
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
+    |> HTTPoison.get([], hackney: [basic_auth: {key, secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
@@ -104,8 +112,9 @@ defmodule ExRazorpay.Orders do
 
   """
   def get_order(order_id) when is_binary(order_id) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/orders/#{order_id}"
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
+    |> HTTPoison.get([], hackney: [basic_auth: {key, secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
@@ -132,8 +141,9 @@ defmodule ExRazorpay.Orders do
 
   """
   def fetch_payments(order_id) when is_binary(order_id) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/orders/#{order_id}/payments"
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
+    |> HTTPoison.get([], hackney: [basic_auth: {key, secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 

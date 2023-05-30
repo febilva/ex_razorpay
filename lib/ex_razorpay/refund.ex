@@ -3,8 +3,12 @@ defmodule ExRazorpay.Refunds do
     Handles Razorpay refund requests like list all refunds, get a refund.
   """
 
-  @key :ex_razorpay |> Application.fetch_env!(:key)
-  @secret :ex_razorpay |> Application.fetch_env!(:secret)
+  defp fetch_key_and_secret() do
+    key = Application.fetch_env!(:ex_razorpay, :key)
+    secret = Application.fetch_env!(:ex_razorpay, :secret)
+    {key, secret}
+  end
+
 
   @doc """
   Retrieves list of refunds based on optional parameters.
@@ -32,9 +36,10 @@ defmodule ExRazorpay.Refunds do
 
   """
   def list_refunds(options \\ []) when is_list(options) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/refunds"
     |> format_url(options)
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
+    |> HTTPoison.get([], hackney: [basic_auth: {key, secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
@@ -53,8 +58,9 @@ defmodule ExRazorpay.Refunds do
 
   """
   def get_refund(refund_id) when is_binary(refund_id) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/refunds/#{refund_id}"
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
+    |> HTTPoison.get([], hackney: [basic_auth: {key, secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 

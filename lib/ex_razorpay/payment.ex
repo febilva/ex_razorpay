@@ -3,8 +3,11 @@ defmodule ExRazorpay.Payments do
     Handles Razorpay payment requests like list all payments, fetch a payment, create a payment etc.
   """
 
-  @key :ex_razorpay |> Application.fetch_env!(:key)
-  @secret :ex_razorpay |> Application.fetch_env!(:secret)
+  defp fetch_key_and_secret() do
+    key = Application.fetch_env!(:ex_razorpay, :key)
+    secret = Application.fetch_env!(:ex_razorpay, :secret)
+    {key, secret}
+  end
 
   @doc """
   Retrieves list of payments based on optional parameters.
@@ -36,9 +39,10 @@ defmodule ExRazorpay.Payments do
 
   """
   def list_payments(options \\ []) when is_list(options) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/payments"
     |> format_url(options)
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
+    |> HTTPoison.get([], hackney: [basic_auth: {key, secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
@@ -63,8 +67,9 @@ defmodule ExRazorpay.Payments do
   """
 
   def fetch_payment(id) when is_binary(id) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/payments/#{id}"
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
+    |> HTTPoison.get([], hackney: [basic_auth: {key, secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
@@ -92,9 +97,10 @@ defmodule ExRazorpay.Payments do
           "wallet" => nil}}
   """
   def capture_payment(payment_id, amount) when is_binary(payment_id) and is_binary(amount) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/payments/#{payment_id}/capture"
     |> HTTPoison.post({:form, [amount: amount]}, [],
-      hackney: [basic_auth: {@key, @secret}],
+      hackney: [basic_auth: {key, secret}],
       ssl: [{:versions, [:"tlsv1.2"]}]
     )
     |> parse_response()
@@ -115,9 +121,10 @@ defmodule ExRazorpay.Payments do
 
   """
   def create_refund(payment_id, amount, notes \\ []) when is_binary(payment_id) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/payments/#{payment_id}/refund"
     |> HTTPoison.post({:form, [amount: amount]}, [],
-      hackney: [basic_auth: {@key, @secret}],
+      hackney: [basic_auth: {key, secret}],
       ssl: [{:versions, [:"tlsv1.2"]}]
     )
     |> parse_response()
@@ -147,9 +154,10 @@ defmodule ExRazorpay.Payments do
 
   """
   def get_refunds(payment_id, options \\ []) when is_binary(payment_id) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/payments/#{payment_id}/refunds"
     |> format_url(options)
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
+    |> HTTPoison.get([], hackney: [basic_auth: {key, secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
@@ -168,8 +176,9 @@ defmodule ExRazorpay.Payments do
 
   """
   def get_refund(payment_id, refund_id) when is_binary(payment_id) and is_binary(refund_id) do
+    {key, secret} = fetch_key_and_secret()
     "https://api.razorpay.com/v1/payments/#{payment_id}/refunds/#{refund_id}"
-    |> HTTPoison.get([], hackney: [basic_auth: {@key, @secret}], ssl: [{:versions, [:"tlsv1.2"]}])
+    |> HTTPoison.get([], hackney: [basic_auth: {key, secret}], ssl: [{:versions, [:"tlsv1.2"]}])
     |> parse_response()
   end
 
